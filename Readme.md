@@ -6,8 +6,6 @@ Each module is versioned independently. When a module change is merged into `mas
 
 ```text
 
-.
-
 ├── modules/
 
 │   ├── module-a/
