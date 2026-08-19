@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+
 jobs:
   validate:
     name: Validate Modules
@@ -39,7 +42,65 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Invoke Monorail release process
+      - name: Detect changed modules
+        id: modules
+        shell: bash
         run: |
-          echo "Invoke Monorail release process"
+          set -e
+
+          echo "Detecting changed modules..."
+
+          changed_files=$(git diff --name-only HEAD^ HEAD)
+
+          echo "Changed files:"
+          echo "$changed_files"
+
+          modules=$(echo "$changed_files" \
+            | awk -F/ '$1 == "modules" {print $2}' \
+            | sort -u \
+            | tr '\n' ' ')
+
+          echo "Changed modules: $modules"
+
+          echo "modules=$modules" >> "$GITHUB_OUTPUT"
+
+      - name: Release changed modules
+        shell: bash
+        run: |
+          set -e
+
+          for module in ${{ steps.modules.outputs.modules }}; do
+
+            echo "Processing module: $module"
+
+            # Find latest tag for this module
+            latest_tag=$(git tag --list "${module}-v*" --sort=-version:refname | head -n 1)
+
+            if [ -z "$latest_tag" ]; then
+              version="0.0.0"
+            else
+              version="${latest_tag#${module}-v}"
+            fi
+
+            echo "Current version: $version"
+
+            # Split version
+            IFS='.' read -r major minor patch <<< "$version"
+
+            # Bump patch version
+            patch=$((patch + 1))
+
+            new_version="${major}.${minor}.${patch}"
+            new_tag="${module}-v${new_version}"
+
+            echo "Creating tag: $new_tag"
+
+            git tag "$new_tag"
+            git push origin "$new_tag"
+
+            echo "Released $module as $new_tag"
+
+          done
