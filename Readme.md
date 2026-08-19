@@ -1,7 +1,3 @@
-import pypandoc
-
-content = r"""# Infrastructure Modules
-
 A centralized repository for reusable infrastructure modules.
 
 Each module is versioned independently. When a module change is merged into `master`, the Monorail release job identifies the changed module, determines the next version, and creates a Git tag for that module.
