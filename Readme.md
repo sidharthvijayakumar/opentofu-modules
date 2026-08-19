@@ -5,7 +5,6 @@ Each module is versioned independently. When a module change is merged into `mas
 ## Repository Structure
 
 ```text
-
 ├── modules/
 
 │   ├── module-a/
