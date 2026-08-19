@@ -94,7 +94,7 @@ jobs:
             patch=$((patch + 1))
 
             new_version="${major}.${minor}.${patch}"
-            new_tag="${module}-v${new_version}"
+            new_tag="${module}/v${new_version}"
 
             echo "Creating tag: $new_tag"
 
