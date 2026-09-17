@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      #- feat/updated-aws-rds
 
 permissions:
   contents: write
@@ -77,8 +78,8 @@ jobs:
             echo "Processing module: $module"
 
             # Find latest tag for this module
-            latest_tag=$(git tag --list "${module}-v*" --sort=-version:refname | head -n 1)
-
+            latest_tag=$(git tag --list "${module}/v*" --sort=-version:refname | head -n 1)
+            echo "Latest tag for $module: $latest_tag"
             if [ -z "$latest_tag" ]; then
               version="0.0.0"
             else
