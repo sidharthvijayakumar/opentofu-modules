@@ -14,7 +14,6 @@ variable "identifier" {
   description = "The name of the RDS instance"
   type        = string
 }
-
 variable "custom_iam_instance_profile" {
   description = "RDS custom iam instance profile"
   type        = string

@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      #- feat/updated-aws-rds
 
 permissions:
   contents: write
@@ -16,7 +15,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v1
 
       - name: Validate modules
         run: |
@@ -83,20 +82,32 @@ jobs:
             if [ -z "$latest_tag" ]; then
               version="0.0.0"
             else
-              version="${latest_tag#${module}-v}"
+              version="${latest_tag#${module}/v}"
             fi
 
             echo "Current version: $version"
 
             # Split version
             IFS='.' read -r major minor patch <<< "$version"
-
+            echo "Current version parts: major=${major},minor=${minor},patch=${patch}"
             # Bump patch version
-            patch=$((patch + 1))
-
+            if [[ ${minor} -ge 99 ]];then
+              if [[ ${patch} -ge 99 ]];then
+                major=$((major+1))
+                patch=0
+                minor=0	
+              else
+                patch=$((patch+1))
+              fi
+            elif [[ ${patch} -ge 99 ]];then
+              minor=$((minor + 1))
+              patch=0
+            else
+              patch=$((patch +1))
+            fi
             new_version="${major}.${minor}.${patch}"
             new_tag="${module}/v${new_version}"
-
+            echo "New version: $new_version"
             echo "Creating tag: $new_tag"
 
             git tag "$new_tag"
