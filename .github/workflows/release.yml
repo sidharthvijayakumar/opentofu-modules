@@ -89,7 +89,7 @@ jobs:
 
             # Split version
             IFS='.' read -r major minor patch <<< "$version"
-            echo "Current version parts: major=${major},minor=${minor},patch=${patch}"
+            #echo "Current version parts: major=${major},minor=${minor},patch=${patch}"
             # Bump patch version
             if [[ ${minor} -ge 99 ]];then
               if [[ ${patch} -ge 99 ]];then
